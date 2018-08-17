@@ -55,4 +55,8 @@ public interface PayService {
      * 当wechat支付超时的时候，pay表的数据不会新增  alipay表不会新增 wechat表不会新增
      */
     void payWithWechatPayTimeOut();
+
+    void wxAliFail();
+
+    void wxForFail();
 }

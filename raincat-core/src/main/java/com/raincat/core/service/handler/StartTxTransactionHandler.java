@@ -49,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * this is tx transaction starter .
- *
+ * 事务发起者处理器
  * @author xiaoyu
  */
 @Component
@@ -116,6 +116,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 final Object res = point.proceed();
                 //保存本地补偿数据
                 String compensateId = txCompensationManager.saveTxCompensation(info.getInvocation(), groupId, waitKey);
+                //通知其他微服务去提交事务
                 final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId);
                 if (commit) {
                     //我觉得到这一步了，应该是切面走完，然后需要提交了，此时应该都是进行提交的

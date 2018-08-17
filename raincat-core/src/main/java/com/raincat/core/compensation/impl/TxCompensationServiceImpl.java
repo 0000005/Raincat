@@ -133,6 +133,7 @@ public class TxCompensationServiceImpl implements TxCompensationService {
                 try {
                     CompensationLocal.getInstance().setCompensationId(CommonConstant.COMPENSATE_ID);
                     MethodUtils.invokeMethod(bean, method, argumentValues, argumentTypes);
+                    LOGGER.info("准备进行补偿{}",transactionRecover);
                     //通知tm自身已经完成提交 //删除本地信息
                     final Boolean success = txManagerMessageService.completeCommitTxTransaction(transactionRecover.getGroupId(),
                             transactionRecover.getTaskId(), TransactionStatusEnum.COMMIT.getCode());
@@ -150,6 +151,9 @@ public class TxCompensationServiceImpl implements TxCompensationService {
 
     }
 
+    /**
+     * 如果整个事务组状态是提交的,但是自己的状态不是提交，那么就进行补偿。
+     */
     private void compensate() {
         scheduledExecutorService
                 .scheduleAtFixedRate(() -> {

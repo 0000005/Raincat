@@ -19,6 +19,7 @@ package com.raincat.springcloud.sample.pay.client;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author xiaoyu
@@ -45,4 +46,13 @@ public interface WechatClient {
      */
     @RequestMapping("/wechat-service/wechat/payTimeOut")
     void payTimeOut();
+
+    /**
+     * 微信调用支付宝失败
+     */
+    @RequestMapping("/wechat-service/wechat/wxAliFail")
+    void wxAliFail();
+
+    @RequestMapping("/wechat-service/wechat/wxFailCount")
+    void wxForFail(@RequestParam( value = "i")int i);
 }

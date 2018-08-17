@@ -1,19 +1,19 @@
 server:
-   port: 8888
+   port: 8886
    context-path: /admin
 
 spring:
    application:
       name: raincat-admin
    profiles:
-     active: mongo
+     active: db
 
 tx:
   admin :
     userName : admin
     password : admin
   redis:
-    hostName: localhost
+    hostName: 192.168.10.202
     port : 6379
     password:
     cluster : false
@@ -27,5 +27,5 @@ accept:
       type[1]: eureka
       type[2]: unaccept
     eureka:
-      url: http://localhost:8761/eureka
+      url: http://192.168.10.203:8761/eureka
       intervalTime: 30

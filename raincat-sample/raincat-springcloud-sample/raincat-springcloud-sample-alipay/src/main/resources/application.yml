@@ -7,9 +7,9 @@ server:
 spring:
     datasource:
         driver-class-name:  com.mysql.jdbc.Driver
-        url: jdbc:mysql://192.168.1.68:3306/alipay?useUnicode=true&characterEncoding=utf8
-        username: xiaoyu
-        password: Wgj@555888
+        url: jdbc:mysql://192.168.10.203:3306/alipay?useUnicode=true&characterEncoding=utf8
+        username: root
+        password: xyz11111111
     application:
       name: alipay-service
 
@@ -19,14 +19,14 @@ mybatis:
 eureka:
  client:
      serviceUrl:
-       defaultZone: http://localhost:8761/eureka/
+       defaultZone: http://192.168.10.203:8761/eureka/
 
 alipay-service :
    ribbon.NFLoadBalancerRuleClassName : com.netflix.loadbalancer.RandomRule
 
 logging:
-            level:
-                root: info
-                com.raincat.core : debug
-            path: "./logs"
+  level:
+      root: info
+      com.raincat.core : info
+  path: "./logs"
 

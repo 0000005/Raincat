@@ -49,7 +49,7 @@ import java.util.concurrent.ScheduledFuture;
 
 /**
  * this is tx transaction actor.
- *
+ * 参与者事务处理器
  * @author xiaoyu
  */
 @Component
@@ -121,7 +121,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                              * 如果此时TxManager down机或者网络通信异常 需要再开一个调度线程来唤醒
                              */
                             final ScheduledFuture scheduledFuture = txTransactionThreadPool.multiScheduled(() -> {
-                                LogUtil.info(LOGGER, "transaction group id：{}", info::getTxGroupId);
+                                LogUtil.info(LOGGER, "Scheduling thread is awake ,transaction group id：{}", info::getTxGroupId);
                                 final BlockTask blockTask = BlockTaskHelper.getInstance().getTask(waitKey);
                                 if (!blockTask.isNotify()) {
                                     //如果获取通知超时了，那么就去获取事务组的状态
@@ -178,6 +178,8 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                                 BlockTaskHelper.getInstance().removeByKey(waitKey);
                                 // 更新补偿信息
                                 if (CommonConstant.TX_TRANSACTION_COMMIT_STATUS_BAD.equals(commitStatus)) {
+                                    //如果进入到此处说明本地事务要回滚，要回滚就不会去补偿了，这里就是为了把补偿标志改为完成。
+                                    //此时补偿执行器会忽略这一条补偿记录
                                     txCompensationManager.updateTxCompensation(compensateId);
                                 }
                             }

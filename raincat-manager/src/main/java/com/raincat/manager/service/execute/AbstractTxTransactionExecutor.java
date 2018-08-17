@@ -115,8 +115,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
          *   2.通知 连接到其他tm的channel，执行命令
          */
 
+        //和txManger的ip相同的
         final List<TxTransactionItem> currentItem = listMap.get(Boolean.TRUE);
-
+        //和txManger的ip不同相同的
         final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
 
         //检查各位channel 是否都激活，渠道状态不是回滚的

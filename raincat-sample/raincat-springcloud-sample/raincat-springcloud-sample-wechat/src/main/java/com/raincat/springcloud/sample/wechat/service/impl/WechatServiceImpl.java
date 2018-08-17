@@ -18,11 +18,15 @@
 package com.raincat.springcloud.sample.wechat.service.impl;
 
 import com.raincat.core.annotation.TxTransaction;
+import com.raincat.springcloud.sample.wechat.client.AlipayClient;
 import com.raincat.springcloud.sample.wechat.entity.Wechat;
 import com.raincat.springcloud.sample.wechat.mapper.WechatMapper;
 import com.raincat.springcloud.sample.wechat.service.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author xiaoyu
@@ -31,6 +35,8 @@ import org.springframework.stereotype.Service;
 public class WechatServiceImpl implements WechatService {
 
     private final WechatMapper wechatMapper;
+    @Autowired
+    private AlipayClient alipayClient;
 
     @Autowired
     public WechatServiceImpl(WechatMapper wechatMapper) {
@@ -60,6 +66,33 @@ public class WechatServiceImpl implements WechatService {
             e.printStackTrace();
         }
 
+
+    }
+
+    @Override
+    @TxTransaction
+    public void wxAliFail(Wechat wechat) {
+        wechatMapper.save(wechat);
+        alipayClient.payFail();
+    }
+
+    @Override
+    @TxTransaction
+    public void wxFor(int i) {
+
+        Wechat wechat = new Wechat();
+        wechat.setAmount(BigDecimal.valueOf(100));
+        wechat.setName("wxFor"+i);
+        wechat.setCreateTime(new Date());
+        if(i==2)
+        {
+            //第二次会失败
+            wechatMapper.save(null);
+        }
+        else
+        {
+            wechatMapper.save(wechat);
+        }
 
     }
 }

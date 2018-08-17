@@ -18,10 +18,10 @@
 
 package com.raincat.core.service.impl;
 
-import com.raincat.common.enums.PropagationEnum;
-import com.raincat.core.annotation.TxTransaction;
 import com.raincat.common.bean.TransactionInvocation;
 import com.raincat.common.bean.TxTransactionInfo;
+import com.raincat.common.enums.PropagationEnum;
+import com.raincat.core.annotation.TxTransaction;
 import com.raincat.core.concurrent.threadlocal.CompensationLocal;
 import com.raincat.core.helper.SpringBeanUtils;
 import com.raincat.core.service.AspectTransactionService;
@@ -59,8 +59,10 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
         final TxTransaction txTransaction = method.getAnnotation(TxTransaction.class);
         final int waitMaxTime = txTransaction.waitMaxTime();
         final PropagationEnum propagation = txTransaction.propagation();
+        //封装补偿信息
         TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
         TxTransactionInfo info = new TxTransactionInfo(invocation, transactionGroupId, compensationId, waitMaxTime, propagation);
+        //获取事务处理器类型（发起者、还是补偿）
         final Class css = txTransactionFactoryService.factoryOf(info);
         final TxTransactionHandler txTransactionHandler =
                 (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(css);

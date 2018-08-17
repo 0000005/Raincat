@@ -25,6 +25,7 @@ import com.raincat.springcloud.sample.pay.mapper.PayMapper;
 import com.raincat.springcloud.sample.pay.service.PayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -33,6 +34,7 @@ import java.util.Date;
  * @author xiaoyu
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class PayServiceImpl implements PayService {
 
     private final AlipayClient alipayClient;
@@ -53,7 +55,7 @@ public class PayServiceImpl implements PayService {
     public Boolean orderPay() {
         Pay pay = new Pay();
         pay.setName("ali|| wechat");
-        pay.setTotalAmount(BigDecimal.valueOf(200));
+        pay.setTotalAmount(BigDecimal.valueOf(800));
         pay.setCreateTime(new Date());
         payMapper.save(pay);
         alipayClient.save();
@@ -138,5 +140,32 @@ public class PayServiceImpl implements PayService {
 
         wechatClient.payTimeOut();
 
+    }
+
+    @Override
+    @TxTransaction
+    public void wxAliFail() {
+        Pay pay = new Pay();
+        pay.setName("wxAliFail");
+        pay.setTotalAmount(BigDecimal.valueOf(200));
+        pay.setCreateTime(new Date());
+        payMapper.save(pay);
+        this.orderPay();
+        wechatClient.wxAliFail();
+    }
+
+    @Override
+    @TxTransaction
+    public void wxForFail() {
+        Pay pay = new Pay();
+        pay.setName("wxForFail");
+        pay.setTotalAmount(BigDecimal.valueOf(200));
+        pay.setCreateTime(new Date());
+        payMapper.save(pay);
+
+        for(int i =0;i<3;i++)
+        {
+            wechatClient.wxForFail(i);
+        }
     }
 }

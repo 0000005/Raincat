@@ -21,6 +21,7 @@ import com.raincat.springcloud.sample.wechat.entity.Wechat;
 import com.raincat.springcloud.sample.wechat.service.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -59,11 +60,27 @@ public class WechatController {
 
     @RequestMapping("/payTimeOut")
     public void payTimeOut() {
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!payTimeOut!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Wechat wechat = new Wechat();
         wechat.setAmount(BigDecimal.valueOf(100));
         wechat.setName("wechat");
         wechat.setCreateTime(new Date());
         wechatService.payTimeOut(wechat);
+    }
+
+    @RequestMapping("/wxAliFail")
+    public void wxAliFail() {
+        Wechat wechat = new Wechat();
+        wechat.setAmount(BigDecimal.valueOf(100));
+        wechat.setName("wxAliFail");
+        wechat.setCreateTime(new Date());
+        wechatService.wxAliFail(wechat);
+    }
+
+
+    @RequestMapping("/wxFailCount")
+    public void wxForFail(@RequestParam( value = "i")int i) {
+        wechatService.wxFor(i);
     }
 
 

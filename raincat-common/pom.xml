@@ -104,9 +104,28 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
 
     </dependencies>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>snapshots</name>
+            <url>http://123.207.61.134:18081/jte-nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://123.207.61.134:18081/jte-nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+
 
     <build>
         <finalName>raincat-common</finalName>

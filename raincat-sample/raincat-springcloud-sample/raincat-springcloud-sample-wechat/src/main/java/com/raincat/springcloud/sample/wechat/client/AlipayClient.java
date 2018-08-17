@@ -15,41 +15,34 @@
  * along with this distribution; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.raincat.springcloud.sample.wechat.service;
+package com.raincat.springcloud.sample.wechat.client;
 
-import com.raincat.springcloud.sample.wechat.entity.Wechat;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author xiaoyu
  */
-public interface WechatService {
+@FeignClient(value = "alipay-service", configuration = MyConfiguration.class)
+public interface AlipayClient {
 
     /**
-     * 微信付款
+     * 保存操作
      *
-     * @param wechat 实体对象
      * @return rows
      */
-    int payment(Wechat wechat);
+    @RequestMapping("/alipay-service/alipay/save")
+    int save();
 
     /**
-     * 支付失败
+     * 支付失败情况测试
      */
+    @RequestMapping("/alipay-service/alipay/payFail")
     void payFail();
 
     /**
-     * 支付超时
-     *
-     * @param wechat 实体对象
+     * 支付超时情况测试
      */
-    void payTimeOut(Wechat wechat);
-
-    /**
-     * 同时调用支付宝失败
-     *
-     * @param wechat 实体对象
-     */
-    void wxAliFail(Wechat wechat);
-
-    void wxFor(int i);
+    @RequestMapping("/alipay-service/alipay/payTimeOut")
+    void payTimeOut();
 }

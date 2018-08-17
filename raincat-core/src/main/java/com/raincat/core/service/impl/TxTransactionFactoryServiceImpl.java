@@ -40,9 +40,11 @@ public class TxTransactionFactoryServiceImpl implements TxTransactionFactoryServ
     @Override
     public Class factoryOf(final TxTransactionInfo info) {
         if (StringUtils.isNoneBlank(info.getCompensationId())) {
+            //补偿发起者
             return StartCompensationHandler.class;
         }
         if (StringUtils.isBlank(info.getTxGroupId())) {
+            //事务发起者
             return StartTxTransactionHandler.class;
         } else {
             if (Objects.equals(CommonConstant.COMPENSATE_ID, info.getTxGroupId())) {

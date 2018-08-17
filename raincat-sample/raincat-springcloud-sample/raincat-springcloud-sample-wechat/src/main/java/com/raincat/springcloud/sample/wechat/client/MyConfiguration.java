@@ -15,41 +15,35 @@
  * along with this distribution; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.raincat.springcloud.sample.wechat.service;
+package com.raincat.springcloud.sample.wechat.client;
 
-import com.raincat.springcloud.sample.wechat.entity.Wechat;
+import com.raincat.springcloud.feign.RestTemplateInterceptor;
+import feign.Feign;
+import feign.Request;
+import feign.Retryer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 /**
  * @author xiaoyu
  */
-public interface WechatService {
+@Configuration
+public class MyConfiguration {
 
-    /**
-     * 微信付款
-     *
-     * @param wechat 实体对象
-     * @return rows
-     */
-    int payment(Wechat wechat);
+    @Bean
+    @Scope("prototype")
+    public Feign.Builder feignBuilder() {
+        return Feign.builder().requestInterceptor(new RestTemplateInterceptor());
+    }
 
-    /**
-     * 支付失败
-     */
-    void payFail();
+    @Bean
+    Request.Options feignOptions() {
+        return new Request.Options(5000, 5000);
+    }
 
-    /**
-     * 支付超时
-     *
-     * @param wechat 实体对象
-     */
-    void payTimeOut(Wechat wechat);
-
-    /**
-     * 同时调用支付宝失败
-     *
-     * @param wechat 实体对象
-     */
-    void wxAliFail(Wechat wechat);
-
-    void wxFor(int i);
+    @Bean
+    Retryer feignRetryer() {
+        return Retryer.NEVER_RETRY;
+    }
 }

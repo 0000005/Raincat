@@ -1,27 +1,69 @@
 eureka:
   instance:
-    hostname: ${hostname:localhost}
-    preferIpAddress: true
     lease-renewal-interval-in-seconds: 2
     lease-expiration-duration-in-seconds: 6
-  server:
-    peerEurekaNodesUpdateIntervalMs: 60000
-    enableSelfPreservation: false
-    evictionIntervalTimerInMs: 5000
+    metadata-map:
+      cluster: jte-cloud-platform-cluster
+    prefer-ip-address: true #当应用程序向eureka注册时，它将使用其IP地址而不是其主机名
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-    healthcheck:
-      enabled: true
     eurekaServiceUrlPollIntervalSeconds: 60
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ #是设置eureka服务器所在的地址，查询服务和注册服务都需要依赖这个地址
+      #defaultZone: http://192.168.10.203:8761/eureka/ #是设置eureka服务器所在的地址，查询服务和注册服务都需要依赖这个地址
+    healthcheck:
+          enabled: true
+  server:
+    wait-time-in-ms-when-sync-empty: 0
+    enable-self-preservation: false # false表示在此eureka服务器中关闭自我保护模式，自我保护模式是指，出现网络分区、eureka在短时间内丢失过多客户端时，会进入自我保护模式，即一个服务长时间没有发送心跳，eureka也不会将其删除
+    peerEurekaNodesUpdateIntervalMs: 60000
+    evictionIntervalTimerInMs: 5000
 
+management:
+  security:
+    enabled: false
+
+#允许通过shutdown关闭服务 curl -i -X POST http://ip:port/shutdown
+endpoints:
+  shutdown:
+    enabled: true #启用shutdown
+    sensitive: false #禁用密码验证
+
+---
+spring:
+  profiles: dev
+
+eureka:
+  instance:
+    hostname: localhost
+---
+spring:
+  profiles: prod
+
+eureka:
+  instance:
+    hostname: 10.104.192.83
+
+---
+spring:
+  profiles: test203
+
+eureka:
+  instance:
+    hostname: 192.168.10.204
+
+---
+spring:
+  profiles: test204
+
+eureka:
+  instance:
+    hostname: 192.168.10.203
 
 
 logging:
-            level:
-                root: info
-                com.raincat.manager : debug
-            path: "./logs"
+  level:
+      root: info
+      com.raincat.manager : info
 
 
 

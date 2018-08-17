@@ -1,12 +1,13 @@
 recover:
    application:
-      list : alipay-service,wechat-service,pay-service
+      #list : alipay-service,wechat-service,pay-service
+      list : member,pms-price,pms-biz,pms-base,pms-report
    serializer :
       support: kryo
    retry :
       max: 10
    db:
       driver :  com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.1.68:3306/tx?useUnicode=true&amp;characterEncoding=utf8
-      username: xiaoyu
-      password: Wgj@555888
+      url: jdbc:mysql://192.168.10.203:3306/tx?useUnicode=true&amp;characterEncoding=utf8
+      username: root
+      password: xyz11111111

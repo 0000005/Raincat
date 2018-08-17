@@ -6,7 +6,7 @@
  * baseImgPath: 图片存放地址
  * 
  */
-let baseUrl = 'http://127.0.0.1:8888/admin';
+let baseUrl = 'http://192.168.10.204:8886/admin';
 let routerMode = 'history';
 let baseImgPath = 'http://images.cangdu.org/';
 

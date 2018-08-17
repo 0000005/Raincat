@@ -32,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
+ * 补偿发起者处理器
  * this is execute compensation.
  * @author xiaoyu
  */

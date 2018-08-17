@@ -100,5 +100,30 @@ public class PayController {
         return "success";
     }
 
+    @PostMapping("/wxAliFail")
+    @ApiOperation("pay调用微信，微信调用阿里，多级调用")
+    public String wxAliFail() {
+        try {
+            payService.wxAliFail();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "wechat pay time out : pay not commit,alipay not commit ";
+        }
+        return "success";
+    }
+
+    @PostMapping("/forFail")
+    @ApiOperation("pay循环调用微信，第二次失败")
+    public String wxForFail() {
+        try {
+            payService.wxForFail();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "wechat pay time out : pay not commit,alipay not commit ";
+        }
+        return "success";
+    }
+
+
 
 }
