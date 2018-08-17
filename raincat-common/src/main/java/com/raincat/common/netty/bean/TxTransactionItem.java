@@ -36,7 +36,10 @@ import java.io.Serializable;
 public class TxTransactionItem implements Serializable {
 
     private static final long serialVersionUID = -983809184773470584L;
-
+    /**
+     *线程安全
+     */
+    private static final ObjectMapper OBJECT_MAPPER=new ObjectMapper();
     /**
      * taskKey.
      */
@@ -107,7 +110,7 @@ public class TxTransactionItem implements Serializable {
         {
             try
             {
-                this.message=new ObjectMapper().writeValueAsString(message);
+                this.message=OBJECT_MAPPER.writeValueAsString(message);
             }
             catch (JsonProcessingException e)
             {
