@@ -157,6 +157,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                                 }
                                 final Integer status = (Integer) waitTask.getAsyncCall().callBack();
                                 if (TransactionStatusEnum.COMMIT.getCode() == status) {
+                                    LOGGER.info("分布式事务提交，txGroupId:{},status:{}",info.getTxGroupId(),status);
                                     //提交事务
                                     platformTransactionManager.commit(transactionStatus);
                                     commitStatus = CommonConstant.TX_TRANSACTION_COMMIT_STATUS_OK;
@@ -166,6 +167,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                                     //删除补偿信息
                                     txCompensationManager.removeTxCompensation(compensateId);
                                 } else {
+                                    LOGGER.warn("分布式事务回滚，txGroupId:{},status:{}",info.getTxGroupId(),status);
                                     //回滚当前事务
                                     platformTransactionManager.rollback(transactionStatus);
                                     //通知tm 自身事务回滚

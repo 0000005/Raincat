@@ -136,7 +136,13 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(hb);
                     break;
             }
-        } finally {
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("处理心跳包出错，HeartBeat:{}",hb);
+            throw e;
+        }
+        finally {
             ReferenceCountUtil.release(msg);
         }
     }

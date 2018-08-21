@@ -118,6 +118,7 @@ public class TxManagerServiceImpl implements TxManagerService {
             }
             redisTemplate.opsForHash().put(cacheKey(key), item.getTaskKey(), item);
         } catch (BeansException e) {
+            log.error("更新事务状态失败，key:{}，hashKey:{}，status：{}，message:{}",key,hashKey,status,message);
             e.printStackTrace();
         }
     }
