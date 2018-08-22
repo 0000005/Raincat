@@ -18,8 +18,13 @@
 
 package com.raincat.manager.task;
 
+import com.raincat.common.constant.CommonConstant;
+import com.raincat.manager.configuration.TxManagerConfiguration;
 import com.raincat.manager.service.TxManagerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,9 +32,13 @@ import org.springframework.stereotype.Component;
  * @author xiaoyu
  */
 @Component
+@Slf4j
 public class RedisCleanTask {
 
     private final TxManagerService txManagerService;
+
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
     @Autowired
     public RedisCleanTask(final TxManagerService txManagerService) {
@@ -38,21 +47,53 @@ public class RedisCleanTask {
 
 
     /**
-     * 清除完全提交的事务组信息，每隔5分钟执行一次.
+     *
+     * 清除完全提交的事务组信息，每隔48小时执行一次.
      *
      * @throws InterruptedException 异常
      */
-    public void removeCommitTxGroup() throws InterruptedException {
+//    @Scheduled(fixedDelay=1000*60*48)
+    public void removeCommitTxGroup() {
         txManagerService.removeCommitTxGroup();
     }
 
     /**
-     * 清除完全回滚的事务组信息，每隔10分钟执行一次.
+     *
+     * 清除完全回滚的事务组信息，每隔48小时执行一次.
      *
      * @throws InterruptedException 异常
      */
-    public void removeRollBackTxGroup() throws InterruptedException {
+//    @Scheduled(fixedDelay=1000*60*48)
+    public void removeRollBackTxGroup()  {
         txManagerService.removeRollBackTxGroup();
+    }
+
+
+    /**
+     *
+     * 同步isTxTransactionOpen配置
+     *
+     * @throws InterruptedException 异常
+     */
+    @Scheduled(fixedDelay=1000*10)
+    public void checkTxTransactionSwitch()  {
+        String isTxTransactionOpen=redisTemplate.opsForValue().get("isTxTransactionOpen");
+        if(isTxTransactionOpen==null)
+        {
+            redisTemplate.opsForValue().set("isTxTransactionOpen",CommonConstant.TX_TRANSACTION_ON);
+        }
+        else
+        {
+            isTxTransactionOpen=isTxTransactionOpen.replaceAll("\"","");
+        }
+        if(CommonConstant.TX_TRANSACTION_OFF.equals(isTxTransactionOpen))
+        {
+            TxManagerConfiguration.isTxTransactionOpen=CommonConstant.TX_TRANSACTION_OFF;
+        }
+        else
+        {
+            TxManagerConfiguration.isTxTransactionOpen=CommonConstant.TX_TRANSACTION_ON;
+        }
     }
 
 }

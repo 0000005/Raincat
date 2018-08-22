@@ -18,8 +18,8 @@
 
 package com.raincat.core.bootstrap;
 
-import com.raincat.common.exception.TransactionRuntimeException;
 import com.raincat.common.config.TxConfig;
+import com.raincat.common.exception.TransactionRuntimeException;
 import com.raincat.core.helper.SpringBeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * TxTransactionBootstrap.
@@ -56,7 +55,7 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
     }
 
     private boolean checkDataConfig(final TxConfig txConfig) {
-        return !StringUtils.isBlank(txConfig.getTxManagerUrl());
+        return StringUtils.isNotBlank(txConfig.getTxManagerUrl());
     }
 }
 

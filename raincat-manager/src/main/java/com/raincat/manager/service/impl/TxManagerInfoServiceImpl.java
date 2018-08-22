@@ -20,9 +20,11 @@ package com.raincat.manager.service.impl;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.eureka.EurekaServerContextHolder;
+import com.raincat.common.constant.CommonConstant;
 import com.raincat.common.entity.TxManagerServer;
 import com.raincat.common.entity.TxManagerServiceDTO;
 import com.raincat.manager.config.NettyConfig;
+import com.raincat.manager.configuration.TxManagerConfiguration;
 import com.raincat.manager.entity.TxManagerInfo;
 import com.raincat.manager.eureka.DiscoveryService;
 import com.raincat.manager.service.TxManagerInfoService;
@@ -30,6 +32,7 @@ import com.raincat.manager.socket.SocketManager;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -55,11 +58,29 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Value("${redisSaveMaxTime}")
     private int redisSaveMaxTime;
 
     @Value("${transactionWaitMaxTime}")
     private int transactionWaitMaxTime;
+
+    @Override
+    public void switchTransaction()
+    {
+        if(CommonConstant.TX_TRANSACTION_OFF.equals(TxManagerConfiguration.isTxTransactionOpen))
+        {
+            TxManagerConfiguration.isTxTransactionOpen=CommonConstant.TX_TRANSACTION_ON;
+            redisTemplate.opsForValue().set("isTxTransactionOpen",CommonConstant.TX_TRANSACTION_ON);
+        }
+        else
+        {
+            TxManagerConfiguration.isTxTransactionOpen=CommonConstant.TX_TRANSACTION_OFF;
+            redisTemplate.opsForValue().set("isTxTransactionOpen",CommonConstant.TX_TRANSACTION_OFF);
+        }
+    }
 
     @Override
     public TxManagerServer findTxManagerServer() {

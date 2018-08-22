@@ -25,6 +25,7 @@ import com.raincat.common.netty.bean.HeartBeat;
 import com.raincat.common.netty.bean.TxTransactionGroup;
 import com.raincat.common.netty.bean.TxTransactionItem;
 import com.raincat.manager.config.Address;
+import com.raincat.manager.configuration.TxManagerConfiguration;
 import com.raincat.manager.service.TxManagerService;
 import com.raincat.manager.service.TxTransactionExecutor;
 import com.raincat.manager.socket.SocketManager;
@@ -73,6 +74,8 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
             Boolean success;
             switch (actionEnum) {
                 case HEART:
+                    //是否开启分布式事务
+                    hb.setIsTxTransactionOpen(TxManagerConfiguration.isTxTransactionOpen);
                     hb.setAction(NettyMessageActionEnum.HEART.getCode());
                     ctx.writeAndFlush(hb);
                     break;

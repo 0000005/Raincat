@@ -18,6 +18,7 @@
 
 package com.raincat.manager.controller;
 
+import com.raincat.manager.configuration.TxManagerConfiguration;
 import com.raincat.manager.entity.TxManagerInfo;
 import com.raincat.manager.service.TxManagerInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class TxManagerIndexController {
     public String index(final HttpServletRequest request) {
         final TxManagerInfo txManagerInfo = txManagerInfoService.findTxManagerInfo();
         request.setAttribute("info", txManagerInfo);
+        request.setAttribute("isTxTransactionOpen",TxManagerConfiguration.isTxTransactionOpen);
         return "index";
     }
 

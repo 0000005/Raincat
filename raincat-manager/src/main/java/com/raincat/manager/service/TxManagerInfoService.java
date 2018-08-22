@@ -31,6 +31,10 @@ import java.util.List;
 public interface TxManagerInfoService {
 
     /**
+     * 分布式事务的开关切换
+     */
+    void switchTransaction();
+    /**
      * 业务端获取TxManager信息.
      *
      * @return TxManagerServer

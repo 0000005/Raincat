@@ -137,6 +137,7 @@ public class TxManagerServiceImpl implements TxManagerService {
 
     @Override
     public void removeCommitTxGroup() {
+        log.warn("定时清理已完全提交的事务组记录......");
         final Set<String> keys = redisTemplate.keys(Constant.REDIS_KEYS);
         keys.parallelStream().forEach(key -> {
             final Map<Object, TxTransactionItem> entries = redisTemplate.opsForHash().entries(key);
@@ -152,6 +153,7 @@ public class TxManagerServiceImpl implements TxManagerService {
 
     @Override
     public void removeRollBackTxGroup() {
+        log.warn("定时清理已完全回滚的事务组记录......");
         final Set<String> keys = redisTemplate.keys(Constant.REDIS_KEYS);
         keys.parallelStream().forEach(key -> {
             final Map<Object, TxTransactionItem> entries = redisTemplate.opsForHash().entries(key);

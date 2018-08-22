@@ -29,6 +29,11 @@ import lombok.Data;
 @Data
 public class TxConfig {
 
+    /**
+     * 是否开启分布式事务 on开启  off 关闭
+     */
+    public static String isTxTransactionOpen="on";
+
     private String repositorySuffix;
 
     /**

@@ -75,6 +75,11 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
         try {
             switch (actionEnum) {
                 case HEART:
+                    if(!Objects.equals(heartBeat.getIsTxTransactionOpen(),TxConfig.isTxTransactionOpen))
+                    {
+                        TxConfig.isTxTransactionOpen=heartBeat.getIsTxTransactionOpen();
+                        LOGGER.warn("分布式事务开关配置已经变动，当前配置为："+TxConfig.isTxTransactionOpen);
+                    }
                     break;
                 case RECEIVE:
                     receivedCommand(heartBeat.getKey(), heartBeat.getResult());

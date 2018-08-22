@@ -18,6 +18,8 @@ redisSaveMaxTime: 3000
 
 tx:
   manager:
+    #是否开启分布式事务 on开启  off 关闭
+    isTxTransactionOpen: on
     netty :
        port: 9998
        serialize: kryo

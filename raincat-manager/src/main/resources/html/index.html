@@ -6,6 +6,8 @@
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <style>
         .container {
             margin-top: 20px;
@@ -74,6 +76,15 @@
                     负载均衡服务器地址
                 </th>
                 <td><span th:text="${info.clusterInfoList}"></span></td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    是否开启分布式事务
+                </th>
+                <td>
+                    <span th:text="${isTxTransactionOpen}"></span>
+                    <button onclick="switchTransaction()">switch</button>
+                </td>
             </tr>
             </tbody>
         </table>

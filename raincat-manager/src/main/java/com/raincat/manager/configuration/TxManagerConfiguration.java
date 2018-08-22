@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.raincat.manager.config.NettyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -52,6 +53,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class TxManagerConfiguration {
+
+    private String accessToken;
+
+    @Value("${tx.manager.isTxTransactionOpen}")
+    public static String isTxTransactionOpen;
 
     @Configuration
     static class NettyConfiguration {

@@ -49,6 +49,11 @@ public class HeartBeat implements Serializable {
     private int result;
 
     /**
+     * 是否开启分布式事务 on开启  off 关闭
+     */
+    private String isTxTransactionOpen;
+
+    /**
      * 事务组信息.
      */
     private TxTransactionGroup txTransactionGroup;

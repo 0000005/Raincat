@@ -67,5 +67,15 @@ public interface CommonConstant {
 
     String TX_TRANSACTION_COMPLETE_FLAG_OK = "1";
 
+    /**
+     * 分布式事务关闭
+     */
+    String TX_TRANSACTION_OFF = "off";
+
+    /**
+     * 分布式事务关闭
+     */
+    String TX_TRANSACTION_ON = "on";
+
 
 }

@@ -20,6 +20,8 @@ package com.raincat.core.service.impl;
 
 import com.raincat.common.bean.TransactionInvocation;
 import com.raincat.common.bean.TxTransactionInfo;
+import com.raincat.common.config.TxConfig;
+import com.raincat.common.constant.CommonConstant;
 import com.raincat.common.enums.PropagationEnum;
 import com.raincat.core.annotation.TxTransaction;
 import com.raincat.core.concurrent.threadlocal.CompensationLocal;
@@ -50,22 +52,30 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
 
     @Override
     public Object invoke(final String transactionGroupId, final ProceedingJoinPoint point) throws Throwable {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
-        Class<?> clazz = point.getTarget().getClass();
-        Object[] args = point.getArgs();
-        Method thisMethod = clazz.getMethod(method.getName(), method.getParameterTypes());
-        final String compensationId = CompensationLocal.getInstance().getCompensationId();
-        final TxTransaction txTransaction = method.getAnnotation(TxTransaction.class);
-        final int waitMaxTime = txTransaction.waitMaxTime();
-        final PropagationEnum propagation = txTransaction.propagation();
-        //封装补偿信息
-        TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
-        TxTransactionInfo info = new TxTransactionInfo(invocation, transactionGroupId, compensationId, waitMaxTime, propagation);
-        //获取事务处理器类型（发起者、还是补偿）
-        final Class css = txTransactionFactoryService.factoryOf(info);
-        final TxTransactionHandler txTransactionHandler =
-                (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(css);
-        return txTransactionHandler.handler(point, info);
+        if(CommonConstant.TX_TRANSACTION_OFF.equals(TxConfig.isTxTransactionOpen))
+        {
+            //已经关闭了分布式事务
+            return point.proceed();
+        }
+        else
+        {
+            MethodSignature signature = (MethodSignature) point.getSignature();
+            Method method = signature.getMethod();
+            Class<?> clazz = point.getTarget().getClass();
+            Object[] args = point.getArgs();
+            Method thisMethod = clazz.getMethod(method.getName(), method.getParameterTypes());
+            final String compensationId = CompensationLocal.getInstance().getCompensationId();
+            final TxTransaction txTransaction = method.getAnnotation(TxTransaction.class);
+            final int waitMaxTime = txTransaction.waitMaxTime();
+            final PropagationEnum propagation = txTransaction.propagation();
+            //封装补偿信息
+            TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
+            TxTransactionInfo info = new TxTransactionInfo(invocation, transactionGroupId, compensationId, waitMaxTime, propagation);
+            //获取事务处理器类型（发起者、还是补偿）
+            final Class css = txTransactionFactoryService.factoryOf(info);
+            final TxTransactionHandler txTransactionHandler =
+                    (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(css);
+            return txTransactionHandler.handler(point, info);
+        }
     }
 }
