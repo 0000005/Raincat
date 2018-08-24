@@ -27,7 +27,6 @@ import com.raincat.core.service.AspectTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -35,6 +34,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * SpringCloudTxTransactionInterceptor.
@@ -53,13 +53,10 @@ public class SpringCloudTxTransactionInterceptor implements TxTransactionInterce
 
     @Override
     public Object interceptor(final ProceedingJoinPoint pjp) throws Throwable {
-        log.error("thread name:{}",Thread.currentThread().getName());
-        log.error("TxTransactionLocal.getInstance().getTxGroupId() :{}",TxTransactionLocal.getInstance().getTxGroupId());
-        log.error("(MethodSignature) point.getSignature().getMethod() :{}",((MethodSignature) pjp.getSignature()).getMethod());
-        if(StringUtils.isNotBlank(TxTransactionLocal.getInstance().getTxGroupId()))
+        String txGroupId=TxTransactionLocal.getInstance().getTxGroupId();
+        if(StringUtils.isNotBlank(txGroupId)&&!Objects.equals(CommonConstant.COMPENSATE_ID, txGroupId))
         {
             //此线程已经开启了分布式事务，不需要再次开启了。
-            log.info("此线程已经开启了分布式事务，不需要再次开启了。");
             return pjp.proceed();
         }
         else if(CommonConstant.TX_TRANSACTION_OFF.equals(TxConfig.isTxTransactionOpen))
