@@ -51,6 +51,8 @@ public interface CommonConstant {
 
     String TX_TRANSACTION_GROUP = "TX_TRANSACTION_GROUP";
 
+    String NEW_TX_TRANSACTION_GROUP = "NEW_TX_TRANSACTION_GROUP";
+
     String TX_MANAGER_PRE = "/tx/manager";
 
     String LOAD_TX_MANAGER_SERVICE_URL = "/loadTxManagerService";
