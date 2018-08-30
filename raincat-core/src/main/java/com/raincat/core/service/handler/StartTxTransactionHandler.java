@@ -162,7 +162,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 }
             }
         } else {
-            throw new TransactionRuntimeException("TxManager connection ex！");
+            throw new TransactionRuntimeException("TxManager connection ex！创建事务组失败！");
         }
     }
 

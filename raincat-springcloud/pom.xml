@@ -5,12 +5,10 @@
     <parent>
         <artifactId>rain-cat</artifactId>
         <groupId>com.raincat</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>raincat-springcloud</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -20,7 +18,6 @@
             <groupId>com.raincat</groupId>
             <artifactId>raincat-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-feign</artifactId>

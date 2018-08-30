@@ -7,7 +7,7 @@
     <groupId>com.raincat</groupId>
     <artifactId>rain-cat</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1</version>
 
     <scm>
         <url>https://github.com/yu199195/Raincat.git</url>
@@ -22,12 +22,12 @@
     <modules>
         <module>raincat-core</module>
         <module>raincat-manager</module>
-        <module>raincat-dubbo</module>
+        <!--<module>raincat-dubbo</module>-->
         <module>raincat-springcloud</module>
         <module>raincat-common</module>
-        <module>raincat-sample</module>
+        <!--<module>raincat-sample</module>-->
         <module>raincat-admin</module>
-        <module>raincat-motan</module>
+        <!--<module>raincat-motan</module>-->
         <module>raincat-spring-boot-starter</module>
     </modules>
 
