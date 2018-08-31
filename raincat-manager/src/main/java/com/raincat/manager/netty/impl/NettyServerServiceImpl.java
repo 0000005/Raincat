@@ -30,8 +30,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -83,12 +81,8 @@ public class NettyServerServiceImpl implements NettyService, DisposableBean {
             nettyServerHandlerInitializer.setSerializeProtocolEnum(serializeProtocolEnum);
             nettyServerHandlerInitializer.setServletExecutor(servletExecutor);
             ServerBootstrap b = new ServerBootstrap();
-        bossGroup = createEventLoopGroup();
-        if (bossGroup instanceof EpollEventLoopGroup) {
-            groupsEpoll(b, maxThread);
-        } else {
-            groupsNio(b, maxThread);
-        }
+        bossGroup = new NioEventLoopGroup(1);
+        groupsNio(b, maxThread);
         try {
             LOGGER.info("netty service started on port: " + nettyConfig.getPort());
             ChannelFuture future = b.bind(nettyConfig.getPort()).sync();
@@ -99,28 +93,6 @@ public class NettyServerServiceImpl implements NettyService, DisposableBean {
             servletExecutor.shutdownGracefully();
         }
 
-    }
-
-
-    private EventLoopGroup createEventLoopGroup() {
-        try {
-            return new EpollEventLoopGroup(1);
-        } catch (final ExceptionInInitializerError ex) {
-            return new NioEventLoopGroup(1);
-        }
-    }
-
-    private void groupsEpoll(final ServerBootstrap bootstrap, final int workThreads) {
-        workerGroup = new EpollEventLoopGroup(workThreads);
-        bootstrap.group(bossGroup, workerGroup)
-                .channel(EpollServerSocketChannel.class)
-                .option(EpollChannelOption.TCP_CORK, true)
-                .option(EpollChannelOption.SO_KEEPALIVE, true)
-                .option(EpollChannelOption.SO_BACKLOG, 100)
-                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(nettyServerHandlerInitializer);
     }
 
     private void groupsNio(final ServerBootstrap bootstrap, final int workThreads) {

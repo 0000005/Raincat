@@ -41,7 +41,7 @@ public class TxTransactionItem implements Serializable {
      */
     private static final ObjectMapper OBJECT_MAPPER=new ObjectMapper();
     /**
-     * taskKey.
+     * taskKey. 线程标识
      */
     private String taskKey;
 

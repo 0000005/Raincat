@@ -23,6 +23,7 @@ import com.raincat.common.entity.TxManagerServiceDTO;
 import com.raincat.common.netty.bean.TxTransactionItem;
 import com.raincat.manager.entity.TxManagerInfo;
 import com.raincat.manager.service.TxManagerInfoService;
+import com.raincat.manager.service.TxManagerService;
 import com.raincat.manager.service.execute.HttpTransactionExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,11 +43,17 @@ public class TxManagerController {
 
     private final HttpTransactionExecutor httpTransactionExecutor;
 
+    private final TxManagerService txManagerService;
+
+
+
     @Autowired
     public TxManagerController(final TxManagerInfoService txManagerInfoService,
+                               final TxManagerService txManagerService,
                                final HttpTransactionExecutor transactionExecutor) {
         this.txManagerInfoService = txManagerInfoService;
         this.httpTransactionExecutor = transactionExecutor;
+        this.txManagerService=txManagerService;
     }
 
     @ResponseBody
@@ -79,6 +86,13 @@ public class TxManagerController {
     @RequestMapping("/transaction-switch")
     public String transactionSwitch(final HttpServletRequest request) {
         txManagerInfoService.switchTransaction();
+        return "ok";
+    }
+
+    @RequestMapping("/clear-data")
+    public String clearData(final HttpServletRequest request) {
+        txManagerService.removeCommitTxGroup();
+        txManagerService.removeRollBackTxGroup();
         return "ok";
     }
 

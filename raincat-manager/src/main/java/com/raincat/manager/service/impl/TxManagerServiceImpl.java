@@ -137,7 +137,7 @@ public class TxManagerServiceImpl implements TxManagerService {
 
     @Override
     public void removeCommitTxGroup() {
-        log.warn("定时清理已完全提交的事务组记录......");
+        log.warn("清理已完全提交的事务组记录......");
         final Set<String> keys = redisTemplate.keys(Constant.REDIS_KEYS);
         keys.parallelStream().forEach(key -> {
             final Map<Object, TxTransactionItem> entries = redisTemplate.opsForHash().entries(key);
@@ -145,6 +145,8 @@ public class TxManagerServiceImpl implements TxManagerService {
             final boolean present = values.stream()
                     .anyMatch(item -> item.getStatus() != TransactionStatusEnum.COMMIT.getCode());
             if (!present) {
+                String setValue=key.substring("transaction:group:".length());
+                redisTemplate.opsForZSet().remove(CommonConstant.REDIS_KEY_SET,setValue);
                 redisTemplate.delete(key);
             }
         });
@@ -153,7 +155,7 @@ public class TxManagerServiceImpl implements TxManagerService {
 
     @Override
     public void removeRollBackTxGroup() {
-        log.warn("定时清理已完全回滚的事务组记录......");
+        log.warn("清理已完全回滚的事务组记录......");
         final Set<String> keys = redisTemplate.keys(Constant.REDIS_KEYS);
         keys.parallelStream().forEach(key -> {
             final Map<Object, TxTransactionItem> entries = redisTemplate.opsForHash().entries(key);
@@ -163,6 +165,8 @@ public class TxManagerServiceImpl implements TxManagerService {
                             && item.getStatus() == TransactionStatusEnum.ROLLBACK.getCode())
                             .findAny();
             if (any.isPresent()) {
+                String setValue=key.substring("transaction:group:".length());
+                redisTemplate.opsForZSet().remove(CommonConstant.REDIS_KEY_SET,setValue);
                 redisTemplate.delete(key);
             }
         });
