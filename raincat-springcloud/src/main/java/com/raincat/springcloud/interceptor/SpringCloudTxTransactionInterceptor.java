@@ -20,6 +20,7 @@ package com.raincat.springcloud.interceptor;
 
 import com.raincat.common.config.TxConfig;
 import com.raincat.common.constant.CommonConstant;
+import com.raincat.core.annotation.TxTransaction;
 import com.raincat.core.concurrent.threadlocal.CompensationLocal;
 import com.raincat.core.concurrent.threadlocal.TxTransactionLocal;
 import com.raincat.core.interceptor.TxTransactionInterceptor;
@@ -27,6 +28,7 @@ import com.raincat.core.service.AspectTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -34,6 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
@@ -66,14 +69,21 @@ public class SpringCloudTxTransactionInterceptor implements TxTransactionInterce
         }
         else
         {
+            MethodSignature signature = (MethodSignature) pjp.getSignature();
+            Method method = signature.getMethod();
+            final TxTransaction txTransaction = method.getAnnotation(TxTransaction.class);
+            final boolean isLocalInvoke=txTransaction.isLocalInvoke();
             //进行分布式事务
             final String compensationId = CompensationLocal.getInstance().getCompensationId();
             String groupId = null;
             if (StringUtils.isBlank(compensationId)) {
-                //如果不是本地反射调用补偿
-                RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-                HttpServletRequest request = requestAttributes == null ? null : ((ServletRequestAttributes) requestAttributes).getRequest();
-                groupId = request == null ? null : request.getHeader(CommonConstant.TX_TRANSACTION_GROUP);
+                //如果不是本地反射调用补偿且不是本地调用
+                if(!isLocalInvoke)
+                {
+                    RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+                    HttpServletRequest request = requestAttributes == null ? null : ((ServletRequestAttributes) requestAttributes).getRequest();
+                    groupId = request == null ? null : request.getHeader(CommonConstant.TX_TRANSACTION_GROUP);
+                }
             }
             return aspectTransactionService.invoke(groupId, pjp);
         }

@@ -60,10 +60,11 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
         final String compensationId = CompensationLocal.getInstance().getCompensationId();
         final TxTransaction txTransaction = method.getAnnotation(TxTransaction.class);
         final int waitMaxTime = txTransaction.waitMaxTime();
+        final boolean isLocalInvoke = txTransaction.isLocalInvoke();
         final PropagationEnum propagation = txTransaction.propagation();
         //封装补偿信息
         TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
-        TxTransactionInfo info = new TxTransactionInfo(invocation, transactionGroupId, compensationId, waitMaxTime, propagation);
+        TxTransactionInfo info = new TxTransactionInfo(invocation, transactionGroupId, compensationId, waitMaxTime,isLocalInvoke, propagation);
         //获取事务处理器类型（发起者、还是补偿）
         final Class css = txTransactionFactoryService.factoryOf(info);
         final TxTransactionHandler txTransactionHandler =

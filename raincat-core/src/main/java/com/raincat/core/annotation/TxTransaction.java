@@ -44,4 +44,10 @@ public @interface TxTransaction {
      * @return 多少秒
      */
     int waitMaxTime() default 60;
+
+    /**
+     * 是否为本地调用，也就是说不经过controller层，无http请求。如定时任务。
+     *
+     */
+    boolean isLocalInvoke() default false;
 }
