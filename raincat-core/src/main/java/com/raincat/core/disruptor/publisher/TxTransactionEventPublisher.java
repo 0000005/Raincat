@@ -19,9 +19,9 @@
 
 package com.raincat.core.disruptor.publisher;
 
+import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.ExceptionHandler;
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.raincat.common.bean.TransactionRecover;
@@ -76,7 +76,7 @@ public class TxTransactionEventPublisher implements DisposableBean {
         disruptor = new Disruptor<>(new TxTransactionEventFactory(), bufferSize, r -> {
             AtomicInteger index = new AtomicInteger(1);
             return new Thread(null, r, "disruptor-thread-" + index.getAndIncrement());
-        }, ProducerType.MULTI, new YieldingWaitStrategy());
+        }, ProducerType.MULTI, new BlockingWaitStrategy());
         disruptor.handleEventsWith(txTransactionEventHandler);
         disruptor.setDefaultExceptionHandler(new ExceptionHandler<TxTransactionEvent>() {
             @Override
