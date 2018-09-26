@@ -32,6 +32,7 @@ import com.raincat.core.concurrent.task.BlockTask;
 import com.raincat.core.concurrent.task.BlockTaskHelper;
 import com.raincat.core.concurrent.threadlocal.TxTransactionLocal;
 import com.raincat.core.concurrent.threadpool.TxTransactionThreadPool;
+import com.raincat.core.listener.TxTransactionCache;
 import com.raincat.core.service.TxManagerMessageService;
 import com.raincat.core.service.TxTransactionHandler;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -161,11 +162,12 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                                     //提交事务
                                     platformTransactionManager.commit(transactionStatus);
                                     commitStatus = CommonConstant.TX_TRANSACTION_COMMIT_STATUS_OK;
-
                                     //通知tm 自身事务提交
                                     asyncComplete(info.getTxGroupId(), waitKey, TransactionStatusEnum.COMMIT.getCode(), res);
                                     //删除补偿信息
                                     txCompensationManager.removeTxCompensation(compensateId);
+                                    //执行回调
+                                    TxTransactionCache.getInstance().runCallback(info.getTxGroupId());
                                 } else {
                                     LOGGER.warn("分布式事务回滚，txGroupId:{},status:{}",info.getTxGroupId(),status);
                                     //回滚当前事务
@@ -201,6 +203,10 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                             throw throwable;
                         });
                         task.signal();
+                    }
+                    finally {
+                        //清除回调缓存信息
+                        TxTransactionCache.getInstance().deleteListener(info.getTxGroupId());
                     }
                 });
 

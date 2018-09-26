@@ -31,6 +31,7 @@ import com.raincat.common.netty.bean.TxTransactionGroup;
 import com.raincat.common.netty.bean.TxTransactionItem;
 import com.raincat.core.compensation.manager.TxCompensationManager;
 import com.raincat.core.concurrent.threadlocal.TxTransactionLocal;
+import com.raincat.core.listener.TxTransactionCache;
 import com.raincat.core.service.TxManagerMessageService;
 import com.raincat.core.service.TxTransactionHandler;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -109,7 +110,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 }
             }
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
             TransactionStatus transactionStatus = platformTransactionManager.getTransaction(def);
             try {
                 //发起调用
@@ -133,7 +134,8 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                             txManagerMessageService
                                     .asyncCompleteCommit(groupId, waitKey,
                                             TransactionStatusEnum.COMMIT.getCode(), res));
-
+                    //回调
+                    TxTransactionCache.getInstance().runCallback(groupId);
                 } else {
                     LogUtil.error(LOGGER, () -> "预提交失败!");
                     //这里建议不直接删除补偿信息，交由补偿任务控制，当前任务无法判定提交超时还是返回失败
@@ -165,8 +167,12 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 if (CommonConstant.TX_TRANSACTION_COMMIT_STATUS_BAD.equals(commitStatus)) {
                     txCompensationManager.updateTxCompensation(groupId);
                 }
+                //清除回调缓存信息
+                TxTransactionCache.getInstance().deleteListener(groupId);
             }
         } else {
+            //清除回调缓存信息
+            TxTransactionCache.getInstance().deleteListener(groupId);
             throw new TransactionRuntimeException("TxManager connection ex！创建事务组失败！");
         }
     }
