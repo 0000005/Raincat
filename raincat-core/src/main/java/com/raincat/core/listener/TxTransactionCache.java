@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TxTransactionCache
@@ -17,7 +19,7 @@ public class TxTransactionCache
     /**
      * 用于存取回调
      */
-    private static final Cache<String,TxTransactionListener> cache = CacheBuilder
+    private static final Cache<String,List<TxTransactionListener>> cache = CacheBuilder
                                         .newBuilder()
                                         .expireAfterWrite(5,TimeUnit.MINUTES)
                                         .build();
@@ -40,7 +42,13 @@ public class TxTransactionCache
         String groupId=TxTransactionLocal.getInstance().getTxGroupId();
         if(StringUtils.isNotBlank(groupId))
         {
-            cache.put(groupId+TxTransactionListener.CALLBACK_KEY,listener);
+            List<TxTransactionListener> listenerList=cache.getIfPresent(groupId+TxTransactionListener.CALLBACK_KEY);
+            if(listenerList==null)
+            {
+                listenerList=new ArrayList<>();
+            }
+            listenerList.add(listener);
+            cache.put(groupId+TxTransactionListener.CALLBACK_KEY,listenerList);
             return true;
         }
         else
@@ -56,13 +64,16 @@ public class TxTransactionCache
      * @return
      */
     public void runCallback(String txGroupId){
-        TxTransactionListener listener= cache.getIfPresent(txGroupId+TxTransactionListener.CALLBACK_KEY);
-        if(listener!=null) {
-            try{
-                listener.afterCommit();
-            }
-            catch (Exception e) {
-                LOGGER.error("分布式事务执行提交回调失败。txGroupId:{},exception:{}",txGroupId,e);
+        List<TxTransactionListener> listenerList= cache.getIfPresent(txGroupId+TxTransactionListener.CALLBACK_KEY);
+        if(listenerList!=null) {
+            for(TxTransactionListener listener : listenerList)
+            {
+                try{
+                    listener.afterCommit();
+                }
+                catch (Exception e) {
+                    LOGGER.error("分布式事务执行提交回调失败。txGroupId:{},exception:{}",txGroupId,e);
+                }
             }
         }
     }
@@ -72,7 +83,7 @@ public class TxTransactionCache
      * @param txGroupId
      * @return
      */
-    public void deleteListener(String txGroupId){
+    public void deleteListenerGroup(String txGroupId){
         if(StringUtils.isNotBlank(txGroupId))
         {
             cache.invalidate(txGroupId+TxTransactionListener.CALLBACK_KEY);

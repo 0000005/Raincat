@@ -206,7 +206,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                     }
                     finally {
                         //清除回调缓存信息
-                        TxTransactionCache.getInstance().deleteListener(info.getTxGroupId());
+                        TxTransactionCache.getInstance().deleteListenerGroup(info.getTxGroupId());
                     }
                 });
 

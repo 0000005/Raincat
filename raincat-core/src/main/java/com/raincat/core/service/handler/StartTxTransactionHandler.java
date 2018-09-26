@@ -168,11 +168,11 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                     txCompensationManager.updateTxCompensation(groupId);
                 }
                 //清除回调缓存信息
-                TxTransactionCache.getInstance().deleteListener(groupId);
+                TxTransactionCache.getInstance().deleteListenerGroup(groupId);
             }
         } else {
             //清除回调缓存信息
-            TxTransactionCache.getInstance().deleteListener(groupId);
+            TxTransactionCache.getInstance().deleteListenerGroup(groupId);
             throw new TransactionRuntimeException("TxManager connection ex！创建事务组失败！");
         }
     }
