@@ -32,7 +32,7 @@ import com.raincat.core.concurrent.task.BlockTask;
 import com.raincat.core.concurrent.task.BlockTaskHelper;
 import com.raincat.core.concurrent.threadlocal.TxTransactionLocal;
 import com.raincat.core.concurrent.threadpool.TxTransactionThreadPool;
-import com.raincat.core.listener.TxTransactionCache;
+import com.raincat.core.listener.TxTransactionListenerUtil;
 import com.raincat.core.service.TxManagerMessageService;
 import com.raincat.core.service.TxTransactionHandler;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -66,15 +66,19 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
 
     private final PlatformTransactionManager platformTransactionManager;
 
+    private final TxTransactionListenerUtil txTransactionListenerUtil;
+
     @Autowired
     public ActorTxTransactionHandler(final TxCompensationManager txCompensationManager,
                                      final PlatformTransactionManager platformTransactionManager,
                                      final TxTransactionThreadPool txTransactionThreadPool,
-                                     final TxManagerMessageService txManagerMessageService) {
+                                     final TxManagerMessageService txManagerMessageService,
+                                     final TxTransactionListenerUtil txTransactionListenerUtil) {
         this.txCompensationManager = txCompensationManager;
         this.platformTransactionManager = platformTransactionManager;
         this.txTransactionThreadPool = txTransactionThreadPool;
         this.txManagerMessageService = txManagerMessageService;
+        this.txTransactionListenerUtil = txTransactionListenerUtil;
     }
 
     @Override
@@ -167,7 +171,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                                     //删除补偿信息
                                     txCompensationManager.removeTxCompensation(compensateId);
                                     //执行回调
-                                    TxTransactionCache.getInstance().runCallback(info.getTxGroupId());
+                                    txTransactionListenerUtil.runCallback(info.getTxGroupId());
                                 } else {
                                     LOGGER.warn("分布式事务回滚，txGroupId:{},status:{}",info.getTxGroupId(),status);
                                     //回滚当前事务
@@ -206,7 +210,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                     }
                     finally {
                         //清除回调缓存信息
-                        TxTransactionCache.getInstance().deleteListenerGroup(info.getTxGroupId());
+                        txTransactionListenerUtil.deleteListenerGroup(info.getTxGroupId());
                     }
                 });
 

@@ -10,7 +10,7 @@ public interface TxTransactionListener {
     String CALLBACK_KEY = "_TX_CALLBACK";
 
     /**
-     * 提交之后被调用
+     * 提交之3秒之后被调用（要确保所有参与者都提交了）
      */
     void afterCommit();
 
