@@ -40,7 +40,6 @@ public class TxTransactionListenerUtil {
         }
         else
         {
-            LOGGER.warn("设置回调失败！");
             return false;
         }
     }
