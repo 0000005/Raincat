@@ -37,11 +37,27 @@ eureka:
     hostname: localhost
 ---
 spring:
-  profiles: prod
+  profiles: prod193
+
+eureka:
+  instance:
+    hostname: 10.104.48.156
+
+---
+spring:
+  profiles: prod72
 
 eureka:
   instance:
     hostname: 10.104.192.83
+
+---
+spring:
+  profiles: prod193
+
+eureka:
+  instance:
+    hostname: 10.104.48.156
 
 ---
 spring:
